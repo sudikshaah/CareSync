@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template, request, redirect, url_for, flash
 from models import db, Patient, Doctor, Appointment, MedicalRecord, Bill
 
@@ -192,4 +193,5 @@ def bills_list():
     return render_template('bills_list.html', bills_data=bills_data)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
