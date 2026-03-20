@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">Billing History</h1>
+    <a href="{{ url_for('appointments') }}" class="bg-primary text-white px-4 py-2 rounded-xl shadow-soft font-semibold hover:bg-blue-600 transition">+ New Bill (From Appointments)</a>
+</div>
+
+<div class="bg-surface shadow-soft rounded-xl overflow-x-auto">
+    <table>
+        <thead>
+            <tr>
+                <th>Bill ID</th>
+                <th>Patient</th>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for b in bills_data %}
+            <tr>
+                <td>#{{ b.id }}</td>
+                <td class="font-medium">{{ b.patient.name }}</td>
+                <td>{{ b.date }}</td>
+                <td class="font-bold text-primary">₹{{ "%.2f"|format(b.total) }}</td>
+                <td class="space-x-2">
+                    <a href="{{ url_for('print_bill', bill_id=b.id) }}" class="text-primary hover:underline font-medium text-sm flex items-center inline-flex">
+                        <i data-lucide="printer" class="w-4 h-4 mr-1"></i> Print
+                    </a>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="text-center py-8 text-gray-500">No bills generated yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
