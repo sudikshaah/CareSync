@@ -1,0 +1,62 @@
+📄 PRD: CareSync (Hospital Management System)
+Version: 1.0 | Status: Draft / "Vibe-Ready" | Theme: Light / Professional
+
+1. Project Overview
+CareSync is a lightweight, administrative-focused Hospital Management System designed to streamline the workflow from patient registration to final billing. It eliminates paper-based tracking and provides a clean, distraction-free UI for hospital staff.
+
+2. Target Users
+Primary: Hospital Administrators (Managing data).
+
+Secondary: Receptionists (Booking appointments, generating bills).
+
+3. Functional Requirements (Features)
+🔐 Phase 1: Authentication & Access
+Secure Login: Admin must log in to access the dashboard.
+
+Session Management: Auto-redirect to login if a guest tries to access /dashboard.
+
+📊 Phase 2: Core Data Management (CRUD)
+Doctor Management: Store name, unique specialization (e.g., Cardiology, Orthopedics), and contact.
+
+Patient Management: Store name, age, gender, and contact.
+
+Search Feature: Search patients by name or phone number.
+
+📅 Phase 3: The "Main Flow" (Appointments)
+Booking: Link a Patient to a Doctor with a specific Date and Time.
+
+Status Tracking: * Scheduled (Default)
+
+Completed (Triggers billing eligibility)
+
+Cancelled (Stays in history but releases the slot)
+
+📄 Phase 4: Clinical & Financial
+Medical Records: Attach a diagnosis and doctor notes to a Patient’s profile.
+
+Smart Billing: * Input: Consultation fee, Medicines, Tests.
+
+Auto-Calculation: Total = Sum of all costs (Calculated on the fly).
+
+Invoicing: A "Print-ready" view for the patient.
+
+4. Non-Functional Requirements (The "Vibe")
+Performance: All pages should load in < 2 seconds (using SQLite for speed).
+
+UI/UX: * Theme: "Hospital Clean" (White/Blue/Green).
+
+Responsiveness: Must work perfectly on Tablets and Laptops.
+
+User Safety: Confirmation modals before any "Delete" action.
+
+5. Success Metrics (For Viva)
+Zero Data Redundancy: Using Foreign Keys to ensure one patient doesn't have two different ID records.
+
+Seamless Flow: From Login -> Appointment -> Record -> Bill in under 2 minutes.
+
+6. Future Scope (V2.0)
+Pharmacy Inventory: Track medicine stock levels.
+
+Patient Portal: Allow patients to view their own records/bills.
+
+Lab Reports: Upload PDF files for test results.

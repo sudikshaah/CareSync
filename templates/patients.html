@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">Patients Management</h1>
+    <button onclick="openModal('addPatientModal')" class="bg-primary text-white px-4 py-2 rounded-xl shadow-soft font-semibold hover:bg-blue-600 transition">+ Add Patient</button>
+</div>
+
+<div class="bg-surface rounded-xl shadow-soft border border-[#E0E0E0] mb-6 p-4">
+    <form method="GET" action="{{ url_for('patients') }}" class="flex space-x-2 w-full md:w-1/2">
+        <input type="text" name="search" value="{{ search or '' }}" placeholder="Search by name or contact..." class="flex-1 px-4 py-2 border border-[#E0E0E0] rounded-xl focus:outline-none focus:border-primary">
+        <button type="submit" class="bg-primary text-white px-4 py-2 rounded-xl font-medium hover:bg-blue-600 transition">Search</button>
+        {% if search %}
+        <a href="{{ url_for('patients') }}" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-xl font-medium hover:bg-gray-300 transition">Clear</a>
+        {% endif %}
+    </form>
+</div>
+
+<div class="bg-surface shadow-soft rounded-xl overflow-x-auto">
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Gender</th>
+                <th>Contact</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in patients %}
+            <tr>
+                <td>#{{ p.id }}</td>
+                <td class="font-medium">{{ p.name }}</td>
+                <td>{{ p.age }}</td>
+                <td>{{ p.gender }}</td>
+                <td>{{ p.contact }}</td>
+                <td class="space-x-2">
+                    <button onclick="openModal('editPatientModal{{ p.id }}')" class="text-primary hover:underline font-medium text-sm">Edit</button>
+                    <button onclick="openModal('deletePatientModal{{ p.id }}')" class="text-danger hover:underline font-medium text-sm">Delete</button>
+                </td>
+            </tr>
+
+            <!-- Edit Modal -->
+            <div id="editPatientModal{{ p.id }}" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center">
+                <div class="bg-surface w-full max-w-md p-6 rounded-xl shadow-xl">
+                    <h2 class="text-xl font-bold mb-4">Edit Patient</h2>
+                    <form method="POST" action="{{ url_for('edit_patient', id=p.id) }}">
+                        <div class="space-y-4">
+                            <div><label class="block text-sm font-medium mb-1">Name</label><input type="text" name="name" value="{{ p.name }}" class="w-full px-3 py-2 border border-[#E0E0E0] rounded-xl" required></div>
+                            <div class="flex space-x-4">
+                                <div class="flex-1"><label class="block text-sm font-medium mb-1">Age</label><input type="number" name="age" value="{{ p.age }}" class="w-full px-3 py-2 border border-[#E0E0E0] rounded-xl" required></div>
+                                <div class="flex-1"><label class="block text-sm font-medium mb-1">Gender</label>
+                                    <select name="gender" class="w-full px-3 py-2 border border-[#E0E0E0] rounded-xl" required>
+                                        <option {% if p.gender == 'Male' %}selected{% endif %}>Male</option>
+                                        <option {% if p.gender == 'Female' %}selected{% endif %}>Female</option>
+                                        <option {% if p.gender == 'Other' %}selected{% endif %}>Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div><label class="block text-sm font-medium mb-1">Contact</label><input type="text" name="contact" value="{{ p.contact }}" class="w-full px-3 py-2 border border-[#E0E0E0] rounded-xl" required></div>
+                        </div>
+                        <div class="mt-6 flex justify-end space-x-3">
+                            <button type="button" onclick="closeModal('editPatientModal{{ p.id }}')" class="px-4 py-2 border border-[#E0E0E0] rounded-xl text-gray-600 hover:bg-gray-100 font-medium">Cancel</button>
+                            <button type="submit" class="px-4 py-2 bg-primary text-white rounded-xl font-medium hover:bg-blue-600">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Delete Confirmation Modal -->
+            <div id="deletePatientModal{{ p.id }}" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center">
+                <div class="bg-surface w-full max-w-sm p-6 rounded-xl shadow-xl border-t-4 border-danger">
+                    <h2 class="text-xl font-bold mb-2">Confirm Deletion</h2>
+                    <p class="text-gray-600 mb-6">Are you sure you want to delete patient "{{ p.name }}"? This action cannot be undone.</p>
+                    <form method="POST" action="{{ url_for('delete_patient', id=p.id) }}" class="flex justify-end space-x-3">
+                        <button type="button" onclick="closeModal('deletePatientModal{{ p.id }}')" class="px-4 py-2 border border-[#E0E0E0] rounded-xl text-gray-600 hover:bg-gray-100 font-medium">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-danger text-white rounded-xl font-medium hover:bg-red-600">Yes, Delete</button>
+                    </form>
+                </div>
+            </div>
+            {% else %}
+            <tr><td colspan="6" class="text-center py-8 text-gray-500">No patients found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Add Modal -->
+<div id="addPatientModal" class="modal fixed inset-0 bg-black bg-opacity-50 z-50 items-center justify-center">
+    <div class="bg-surface w-full max-w-md p-6 rounded-xl shadow-xl">
+        <h2 class="text-xl font-bold mb-4">Add New Patient</h2>
+        <form method="POST" action="{{ url_for('patients') }}">
+            <div class="space-y-4">
+                <div><label class="block text-sm font-medium mb-1">Name</label><input type="text" name="name" class="w-full px-3 py-2 border border-[#E0E0E0] rounded-xl" required></div>
+                <div class="flex space-x-4">
+                    <div class="flex-1"><label class="block text-sm font-medium mb-1">Age</label><input type="number" name="age" class="w-full px-3 py-2 border border-[#E0E0E0] rounded-xl" required></div>
+                    <div class="flex-1"><label class="block text-sm font-medium mb-1">Gender</label>
+                        <select name="gender" class="w-full px-3 py-2 border border-[#E0E0E0] rounded-xl" required>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div><label class="block text-sm font-medium mb-1">Contact</label><input type="text" name="contact" class="w-full px-3 py-2 border border-[#E0E0E0] rounded-xl" required></div>
+            </div>
+            <div class="mt-6 flex justify-end space-x-3">
+                <button type="button" onclick="closeModal('addPatientModal')" class="px-4 py-2 border border-[#E0E0E0] rounded-xl text-gray-600 hover:bg-gray-100 font-medium">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-primary text-white rounded-xl font-medium hover:bg-blue-600">Add Patient</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

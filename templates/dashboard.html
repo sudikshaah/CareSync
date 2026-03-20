@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6 text-gray-800">Dashboard Overview</h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Total Patients -->
+        <div class="bg-surface rounded-xl shadow-soft p-6 border border-[#E0E0E0] flex items-center justify-between">
+            <div>
+                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1">Total Patients</h3>
+                <p class="text-3xl font-bold text-gray-800">{{ total_patients }}</p>
+            </div>
+            <div class="h-12 w-12 rounded-full bg-blue-50 flex items-center justify-center text-primary">
+                <i data-lucide="users" class="w-6 h-6"></i>
+            </div>
+        </div>
+
+        <!-- Active Doctors -->
+        <div class="bg-surface rounded-xl shadow-soft p-6 border border-[#E0E0E0] flex items-center justify-between">
+            <div>
+                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1">Active Doctors</h3>
+                <p class="text-3xl font-bold text-gray-800">{{ active_doctors }}</p>
+            </div>
+            <div class="h-12 w-12 rounded-full bg-blue-50 flex items-center justify-center text-primary">
+                <i data-lucide="stethoscope" class="w-6 h-6"></i>
+            </div>
+        </div>
+
+        <!-- Today's Appts -->
+        <div class="bg-surface rounded-xl shadow-soft p-6 border border-[#E0E0E0] flex items-center justify-between">
+            <div>
+                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1">Today's Appointments</h3>
+                <p class="text-3xl font-bold text-gray-800">{{ todays_appointments }}</p>
+            </div>
+            <div class="h-12 w-12 rounded-full bg-green-50 flex items-center justify-center text-secondary">
+                <i data-lucide="calendar" class="w-6 h-6"></i>
+            </div>
+        </div>
+
+        <!-- Total Revenue -->
+        <div class="bg-surface rounded-xl shadow-soft p-6 border border-[#E0E0E0] flex items-center justify-between">
+            <div>
+                <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1">Total Revenue</h3>
+                <p class="text-3xl font-bold text-gray-800">₹{{ "%.2f"|format(total_revenue) }}</p>
+            </div>
+            <div class="h-12 w-12 rounded-full bg-blue-50 flex items-center justify-center text-primary">
+                <i data-lucide="indian-rupee" class="w-6 h-6"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions & Recent Appointments -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+        <!-- Quick Actions -->
+        <div class="bg-surface shadow-soft rounded-xl border border-[#E0E0E0] p-6">
+            <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                <i data-lucide="zap" class="w-5 h-5 mr-2 text-yellow-500"></i> Quick Actions
+            </h2>
+            <div class="space-y-4">
+                <a href="{{ url_for('appointments') }}" class="flex items-center w-full px-4 py-3 bg-blue-50 text-primary rounded-xl font-semibold hover:bg-blue-100 transition">
+                    <i data-lucide="file-plus" class="w-5 h-5 mr-3"></i> Generate New Bill
+                </a>
+                <a href="{{ url_for('records') }}" class="flex items-center w-full px-4 py-3 bg-green-50 text-secondary rounded-xl font-semibold hover:bg-green-100 transition">
+                    <i data-lucide="clipboard-plus" class="w-5 h-5 mr-3"></i> Add Medical Record
+                </a>
+            </div>
+        </div>
+
+        <!-- Recent Appointments Table -->
+        <div class="lg:col-span-2 bg-surface shadow-soft rounded-xl border border-[#E0E0E0] overflow-hidden">
+            <div class="px-6 py-4 border-b border-[#E0E0E0] bg-gray-50">
+            <h2 class="text-lg font-bold text-gray-800 flex items-center">
+                <i data-lucide="clock" class="w-5 h-5 mr-2 text-primary"></i> Recent Appointments
+            </h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-none shadow-none rounded-none">
+                <thead>
+                    <tr>
+                        <th class="bg-white border-b-2">Patient</th>
+                        <th class="bg-white border-b-2">Doctor</th>
+                        <th class="bg-white border-b-2">Date & Time</th>
+                        <th class="bg-white border-b-2">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    {% for a in recent_appointments %}
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="border-b-0 py-3 font-medium">{{ a.patient.name }}</td>
+                        <td class="border-b-0 py-3">Dr. {{ a.doctor.name }}</td>
+                        <td class="border-b-0 py-3 text-gray-600">{{ a.date }} at {{ a.time.strftime('%H:%M') }}</td>
+                        <td class="border-b-0 py-3">
+                            {% if a.status == 'Scheduled' %}
+                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-bold">{{ a.status }}</span>
+                            {% elif a.status == 'Completed' %}
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-bold">{{ a.status }}</span>
+                            {% elif a.status == 'Cancelled' %}
+                                <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-bold">{{ a.status }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4" class="text-center py-6 text-gray-500 border-b-0">No recent appointments.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
